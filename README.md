@@ -113,7 +113,6 @@ AMADOP/
 │   ├── comment_service/       # Comment microservice
 │   └── notification_service/  # Notification microservice
 ├── frontend/                  # React frontend application
-├── .kiro/                     # Kiro AI specifications
 ├── docker-compose.yml         # Docker orchestration
 └── README.md                  # This file
 ```
@@ -168,13 +167,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Ayush Vishwakaram** - [GitHub Profile](https://github.com/soulvv)
 **Advita Singh** - [GitHub Profile](https://github.com/advita6)
-
-## Acknowledgments
-
-- Built with [Kiro AI](https://kiro.ai) - AI-powered development assistant
-- Inspired by modern microservices architecture patterns
-- Thanks to the open-source community for the amazing tools
-
----
-
-⭐ **Star this repository if you found it helpful!**
