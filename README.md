@@ -118,7 +118,7 @@ AMADOP/
 └── README.md                  # This file
 ```
 
-## 🔧 Configuration
+## Configuration
 
 Each service uses environment variables for configuration. Copy `.env.example` files and customize:
 
@@ -166,9 +166,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**soulvv** - [GitHub Profile](https://github.com/soulvv)
+**Ayush Vishwakaram** - [GitHub Profile](https://github.com/soulvv)
+**Advita Singh** - [GitHub Profile](https://github.com/advita6)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built with [Kiro AI](https://kiro.ai) - AI-powered development assistant
 - Inspired by modern microservices architecture patterns
