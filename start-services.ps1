@@ -79,12 +79,3 @@ Set-Location ..
 
 Write-Host "`n========================================" -ForegroundColor Green
 Write-Host "Setup Complete!" -ForegroundColor Green
-Write-Host "========================================" -ForegroundColor Green
-Write-Host "`nTo start all services, run:" -ForegroundColor Yellow
-Write-Host "  .\run-all-services.ps1" -ForegroundColor Cyan
-Write-Host "`nOr start services individually in separate terminals:" -ForegroundColor Yellow
-Write-Host "  cd backend/auth_service && .\venv\Scripts\Activate.ps1 && uvicorn main:app --port 8001 --reload" -ForegroundColor Cyan
-Write-Host "  cd backend/post_service && .\venv\Scripts\Activate.ps1 && uvicorn main:app --port 8002 --reload" -ForegroundColor Cyan
-Write-Host "  cd backend/comment_service && .\venv\Scripts\Activate.ps1 && uvicorn main:app --port 8003 --reload" -ForegroundColor Cyan
-Write-Host "  cd backend/notification_service && .\venv\Scripts\Activate.ps1 && uvicorn main:app --port 8004 --reload" -ForegroundColor Cyan
-Write-Host "  cd frontend && npm run dev" -ForegroundColor Cyan

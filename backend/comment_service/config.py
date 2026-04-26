@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     AUTH_SERVICE_URL: str = "http://auth_service:8001"
     POST_SERVICE_URL: str = "http://post_service:8002"
     NOTIFICATION_SERVICE_URL: str = "http://notification_service:8004"
+    AI_SERVICE_URL: str = "http://ai_service:8005"
     CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
     
     class Config:

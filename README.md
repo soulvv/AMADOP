@@ -77,6 +77,9 @@ cd frontend && npm install && npm run dev
 | **Post API** | http://localhost:8002/docs | Blog post API docs |
 | **Comment API** | http://localhost:8003/docs | Comment API docs |
 | **Notification API** | http://localhost:8004/docs | Notification API docs |
+| **AI Service** | http://localhost:8005/docs | AI agents API docs |
+| **Grafana** | http://localhost:3000 | Monitoring dashboards |
+| **Prometheus** | http://localhost:9090 | Metrics collection |
 
 ## 🛠️ Technology Stack
 
@@ -87,6 +90,7 @@ cd frontend && npm install && npm run dev
 - **JWT** - JSON Web Tokens for authentication
 - **Bcrypt** - Password hashing
 - **Prometheus** - Metrics collection
+- **OpenAI GPT-4o-mini** - AI summarization & moderation
 - **Uvicorn** - ASGI server
 
 ### Frontend
@@ -97,9 +101,12 @@ cd frontend && npm install && npm run dev
 - **React Router** - Client-side routing
 - **Axios** - HTTP client
 
-### DevOps
+### DevOps & Monitoring
 - **Docker** - Containerization
 - **Docker Compose** - Multi-container orchestration
+- **Kubernetes (Minikube)** - Container orchestration with HPA
+- **Prometheus** - Metrics scraping & alerting
+- **Grafana** - Visual monitoring dashboards
 - **Health Checks** - Service monitoring
 - **Structured Logging** - JSON-formatted logs
 
@@ -111,9 +118,17 @@ AMADOP/
 │   ├── auth_service/          # Authentication microservice
 │   ├── post_service/          # Blog post microservice
 │   ├── comment_service/       # Comment microservice
-│   └── notification_service/  # Notification microservice
+│   ├── notification_service/  # Notification microservice
+│   └── ai_service/            # Autonomous AI agents
+│       ├── agents/
+│       │   ├── content_agent.py   # Summarization + Moderation
+│       │   └── devops_agent.py    # Health monitoring + Anomaly detection
+│       ├── main.py
+│       ├── routes.py
+│       └── Dockerfile
 ├── frontend/                  # React frontend application
-├── .kiro/                     # Kiro AI specifications
+├── k8s/                       # Kubernetes manifests
+├── monitoring/                # Prometheus & Grafana configs
 ├── docker-compose.yml         # Docker orchestration
 └── README.md                  # This file
 ```
@@ -140,6 +155,26 @@ POST_SERVICE_URL=http://localhost:8002
 - **Metrics**: `GET /metrics` (Prometheus format)
 - **Structured Logs**: JSON-formatted application logs
 - **API Documentation**: Auto-generated OpenAPI/Swagger docs
+- **Grafana Dashboards**: Service health, CPU, memory, HTTP errors
+- **Prometheus**: Metrics scraping with pod annotations
+
+## 🤖 Autonomous AI Agents
+
+The platform includes 3 AI agents powered by OpenAI GPT-4o-mini (with rule-based fallbacks):
+
+### Content Intelligence Agent
+- **Auto-Summarization**: Generates topic-based summaries for every blog post
+- **Endpoint**: `POST /api/v1/ai/summarize`
+
+### Content Moderation Agent
+- **Profanity Filter**: Scans comments for toxic language and replaces with `****`
+- **40+ toxic words** covered with case-insensitive regex matching
+- **Endpoint**: `POST /api/v1/ai/moderate`
+
+### DevOps Self-Healing Agent
+- **Health Monitoring**: Pings all microservices and reports status + response times
+- **Anomaly Detection**: Detects service downtime, high latency (>2s), and CPU spikes
+- **Endpoints**: `GET /api/v1/ai/health-check`, `GET /api/v1/ai/anomalies`
 
 ## 🧪 Testing
 

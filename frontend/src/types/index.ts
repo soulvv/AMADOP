@@ -11,6 +11,7 @@ export interface Post {
   content: string;
   author_id: number;
   author_username?: string;
+  summary?: string;
   created_at: string;
 }
 

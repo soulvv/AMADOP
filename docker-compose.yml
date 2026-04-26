@@ -12,7 +12,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/dataL
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -101,6 +101,33 @@ services:
     volumes:
       - ./backend/notification_service:/app
     command: python -m uvicorn main:app --host 0.0.0.0 --port 8004 --reload
+
+  # AI Service (Agents)
+  ai_service:
+    platform: linux/amd64
+    build:
+      context: ./backend/ai_service
+      dockerfile: Dockerfile
+    container_name: ai_service
+    ports:
+      - "8005:8005"
+    env_file:
+      - ./backend/ai_service/.env
+    environment:
+      NOTIFICATION_SERVICE_URL: http://notification_service:8004
+      AUTH_SERVICE_URL: http://auth_service:8001
+      POST_SERVICE_URL: http://post_service:8002
+      COMMENT_SERVICE_URL: http://comment_service:8003
+      PROMETHEUS_URL: http://host.docker.internal:9090
+      SCAN_INTERVAL_SECONDS: "30"
+      ALERT_COOLDOWN_SECONDS: "300"
+      ADMIN_USER_IDS: "[1]"
+    depends_on:
+      notification_service:
+        condition: service_started
+    volumes:
+      - ./backend/ai_service:/app
+    command: python -m uvicorn main:app --host 0.0.0.0 --port 8005 --reload
 
   # Frontend
   frontend:

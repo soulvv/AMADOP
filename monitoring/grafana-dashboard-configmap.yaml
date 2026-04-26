@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: amadop-dashboard
+  namespace: amadop
+  labels:
+    grafana_dashboard: "1"
+data:
+  amadop-dashboard.json: |
+    {
+      "title": "AMADOP Platform Overview",
+      "uid": "amadop-overview",
+      "version": 1,
+      "schemaVersion": 36,
+      "refresh": "10s",
+      "time": { "from": "now-1h", "to": "now" },
+      "panels": [
+        {
+          "id": 1,
+          "title": "HTTP Request Rate per Service",
+          "type": "timeseries",
+          "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+          "targets": [
+            {
+              "expr": "sum(rate(http_requests_total[5m])) by (app)",
+              "legendFormat": "{{app}}"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "HTTP Error Rate (5xx) per Service",
+          "type": "timeseries",
+          "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+          "targets": [
+            {
+              "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) by (app)",
+              "legendFormat": "{{app}} errors"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "title": "Pod CPU Usage",
+          "type": "timeseries",
+          "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+          "targets": [
+            {
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"amadop\", container!=\"\"}[5m])) by (pod)",
+              "legendFormat": "{{pod}}"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "title": "Pod Memory Usage",
+          "type": "timeseries",
+          "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+          "targets": [
+            {
+              "expr": "sum(container_memory_working_set_bytes{namespace=\"amadop\", container!=\"\"}) by (pod)",
+              "legendFormat": "{{pod}}"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "title": "Pod Restart Count",
+          "type": "stat",
+          "gridPos": { "x": 0, "y": 16, "w": 12, "h": 6 },
+          "targets": [
+            {
+              "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"amadop\"}) by (pod)",
+              "legendFormat": "{{pod}}"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "title": "Request Latency (p95)",
+          "type": "timeseries",
+          "gridPos": { "x": 12, "y": 16, "w": 12, "h": 6 },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, app))",
+              "legendFormat": "{{app}} p95"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "title": "HPA Replica Count",
+          "type": "stat",
+          "gridPos": { "x": 0, "y": 22, "w": 12, "h": 5 },
+          "targets": [
+            {
+              "expr": "kube_horizontalpodautoscaler_status_current_replicas{namespace=\"amadop\"}",
+              "legendFormat": "{{horizontalpodautoscaler}}"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "title": "Running Pods in amadop namespace",
+          "type": "stat",
+          "gridPos": { "x": 12, "y": 22, "w": 12, "h": 5 },
+          "targets": [
+            {
+              "expr": "count(kube_pod_status_phase{namespace=\"amadop\", phase=\"Running\"})",
+              "legendFormat": "Running Pods"
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "title": "AI Agent Scans (Total)",
+          "type": "stat",
+          "gridPos": { "x": 0, "y": 27, "w": 8, "h": 5 },
+          "targets": [
+            {
+              "expr": "amadop_agent_scan_total",
+              "legendFormat": "Scans"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "title": "DevOps Anomalies Detected",
+          "type": "stat",
+          "gridPos": { "x": 8, "y": 27, "w": 8, "h": 5 },
+          "targets": [
+            {
+              "expr": "amadop_agent_anomalies_detected",
+              "legendFormat": "Anomalies"
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "title": "Security Threats Detected",
+          "type": "stat",
+          "gridPos": { "x": 16, "y": 27, "w": 8, "h": 5 },
+          "targets": [
+            {
+              "expr": "amadop_agent_threats_detected",
+              "legendFormat": "Threats"
+            }
+          ]
+        }
+      ]
+    }

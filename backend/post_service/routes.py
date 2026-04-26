@@ -52,10 +52,25 @@ async def create_post(
     current_user: dict = Depends(verify_token)
 ):
     """Create a new blog post"""
+    # Get AI Summary
+    ai_summary = None
+    try:
+        async with httpx.AsyncClient() as client:
+            ai_response = await client.post(
+                f"{settings.AI_SERVICE_URL}/api/v1/ai/summarize",
+                json={"content": post.content},
+                timeout=10.0
+            )
+            if ai_response.status_code == 200:
+                ai_summary = ai_response.json().get("summary")
+    except Exception as e:
+        logger.error(f"Failed to get AI summary: {str(e)}")
+
     new_post = Post(
         title=post.title,
         content=post.content,
-        author_id=current_user["id"]
+        author_id=current_user["id"],
+        summary=ai_summary
     )
     
     db.add(new_post)

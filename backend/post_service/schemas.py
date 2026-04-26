@@ -14,6 +14,7 @@ class PostResponse(BaseModel):
     content: str
     author_id: int
     author_username: Optional[str] = None
+    summary: Optional[str] = None
     created_at: datetime
 
     class Config:

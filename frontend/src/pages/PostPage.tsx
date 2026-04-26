@@ -75,7 +75,15 @@ const PostPage = () => {
         <div className="text-sm text-gray-500 mb-4">
           By User {post.author_id} • {new Date(post.created_at).toLocaleDateString()}
         </div>
-        <div className="prose max-w-none">{post.content}</div>
+        
+        {post.summary && (
+          <div className="mb-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <span className="text-blue-800 text-xs font-bold uppercase tracking-wider mb-1 block">AI-Generated Summary</span>
+            <p className="text-blue-900 italic leading-relaxed">{post.summary}</p>
+          </div>
+        )}
+
+        <div className="prose max-w-none whitespace-pre-wrap">{post.content}</div>
       </article>
 
       <div className="bg-white p-6 rounded-lg shadow">

@@ -5,6 +5,7 @@ from typing import List
 class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://postgres:postgres@db:5432/amadop_db"
     AUTH_SERVICE_URL: str = "http://auth_service:8001"
+    AI_SERVICE_URL: str = "http://ai_service:8005"
     CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
     
     class Config:

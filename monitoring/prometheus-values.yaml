@@ -1,0 +1,47 @@
+prometheus:
+  prometheusSpec:
+    retention: 15d
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    # Scrape pods annotated with prometheus.io/scrape: "true" in amadop namespace
+    additionalScrapeConfigs:
+      - job_name: 'amadop-services'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - amadop
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: "true"
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: replace
+            target_label: app
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+
+# Enable kube-state-metrics for cluster-level metrics
+kubeStateMetrics:
+  enabled: true
+
+# Enable node-exporter for node-level metrics
+nodeExporter:
+  enabled: true
+
+# Grafana is deployed separately
+grafana:
+  enabled: false
+
+alertmanager:
+  enabled: false

@@ -42,10 +42,17 @@ const HomePage = () => {
             className="block bg-white p-6 rounded-lg shadow hover:shadow-lg transition"
           >
             <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-            <p className="text-gray-600 mb-2">
-              {post.content.substring(0, 200)}
-              {post.content.length > 200 ? '...' : ''}
-            </p>
+            {post.summary ? (
+              <div className="mb-3">
+                <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mb-2 font-medium">AI Summary</span>
+                <p className="text-gray-700 italic border-l-4 border-blue-200 pl-4">{post.summary}</p>
+              </div>
+            ) : (
+              <p className="text-gray-600 mb-2">
+                {post.content.substring(0, 200)}
+                {post.content.length > 200 ? '...' : ''}
+              </p>
+            )}
             <div className="text-sm text-gray-500">
               By User {post.author_id} • {new Date(post.created_at).toLocaleDateString()}
             </div>

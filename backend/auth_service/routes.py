@@ -105,8 +105,26 @@ async def login(credentials: UserLogin, db: Session = Depends(get_db)):
     # Generate JWT token
     access_token = create_jwt_token(user.id, user.username)
     
+    # Update last login timestamp
+    user.last_login = datetime.utcnow()
+    db.commit()
+    
     logger.info(f"User logged in: {user.username}")
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/logout")
+async def logout(token: str, db: Session = Depends(get_db)):
+    """Logout user and update last_logout timestamp"""
+    payload = verify_jwt_token(token)
+    user_id = payload.get("sub")
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if user:
+        user.last_logout = datetime.utcnow()
+        db.commit()
+        logger.info(f"User logged out: {user.username}")
+        
+    return {"status": "success", "message": "Logged out successfully"}
 
 
 @router.get("/me", response_model=UserResponse)

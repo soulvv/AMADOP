@@ -97,11 +97,28 @@ async def create_comment(
             detail="Post service unavailable"
         )
     
+    # AI Moderation
+    comment_content = comment.content
+    try:
+        async with httpx.AsyncClient() as client:
+            mod_response = await client.post(
+                f"{settings.AI_SERVICE_URL}/api/v1/ai/moderate",
+                json={"text": comment.content},
+                timeout=10.0
+            )
+            if mod_response.status_code == 200:
+                mod_data = mod_response.json()
+                if not mod_data.get("is_safe", True):
+                    logger.warning(f"Unsafe comment detected: {mod_data.get('reason')}")
+                    comment_content = mod_data.get("cleaned_text", "[Content removed by AI Moderator]")
+    except Exception as e:
+        logger.error(f"Moderation service error: {str(e)}")
+
     # Create comment
     new_comment = Comment(
         post_id=comment.post_id,
         user_id=current_user["id"],
-        content=comment.content
+        content=comment_content
     )
     
     db.add(new_comment)

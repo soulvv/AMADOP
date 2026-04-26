@@ -1,0 +1,41 @@
+service:
+  type: NodePort
+  nodePort: 32000
+
+adminUser: admin
+adminPassword: amadop-admin
+
+# Pre-configure Prometheus as default datasource
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://kube-prometheus-stack-prometheus:9090
+        access: proxy
+        isDefault: true
+
+# Enable sidecar to auto-load dashboards from labeled ConfigMaps
+sidecar:
+  dashboards:
+    enabled: true
+    label: grafana_dashboard
+    labelValue: "1"
+    searchNamespace: monitoring
+
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: amadop
+        orgId: 1
+        folder: AMADOP
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/amadop
+
+persistence:
+  enabled: false
