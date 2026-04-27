@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'auth_service'
+    static_configs:
+      - targets: ['auth_service:8001']
+
+  - job_name: 'post_service'
+    static_configs:
+      - targets: ['post_service:8002']
+
+  - job_name: 'comment_service'
+    static_configs:
+      - targets: ['comment_service:8003']
+
+  - job_name: 'notification_service'
+    static_configs:
+      - targets: ['notification_service:8004']
+
+  - job_name: 'ai_service'
+    static_configs:
+      - targets: ['ai_service:8005']

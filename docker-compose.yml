@@ -12,7 +12,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/dataL
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -118,7 +118,7 @@ services:
       AUTH_SERVICE_URL: http://auth_service:8001
       POST_SERVICE_URL: http://post_service:8002
       COMMENT_SERVICE_URL: http://comment_service:8003
-      PROMETHEUS_URL: http://host.docker.internal:9090
+      PROMETHEUS_URL: http://prometheus:9090
       SCAN_INTERVAL_SECONDS: "30"
       ALERT_COOLDOWN_SECONDS: "300"
       ADMIN_USER_IDS: "[1]"
@@ -145,5 +145,33 @@ services:
       - /app/node_modules
     command: npm run dev
 
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: amadop_prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: amadop_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
 volumes:
   postgres_data:
+  prometheus_data:
+  grafana_data:
