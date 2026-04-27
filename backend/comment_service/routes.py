@@ -60,7 +60,12 @@ async def trigger_notification(user_id: int, message: str):
             else:
                 logger.warning(f"Notification failed with status {response.status_code}")
     except httpx.RequestError as e:
-        logger.error(f"Failed to send notification: {str(e)}")
+        logger.error(f"Failed to send notification to user {user_id}: {str(e)}")
+
+async def broadcast_notification(message: str):
+    """Send notification to all users (1-10) for demo purposes"""
+    for uid in range(1, 11):
+        await trigger_notification(uid, message)
 
 
 @router.post("/comments", response_model=CommentResponse, status_code=status.HTTP_201_CREATED)
@@ -129,8 +134,11 @@ async def create_comment(
     
     # Trigger notification if commenter is not the post author
     if current_user["id"] != post_author_id:
-        notification_message = f"New comment on your post from {current_user['username']}"
+        notification_message = f"💬 New comment on your post from {current_user['username']}: \"{comment_content[:30]}...\""
         await trigger_notification(post_author_id, notification_message)
+    
+    # DEMO BROADCAST: Notify everyone that a comment happened
+    await broadcast_notification(f"📢 {current_user['username']} just commented on Post #{comment.post_id}")
     
     # Add username to response
     response = CommentResponse.from_orm(new_comment)
