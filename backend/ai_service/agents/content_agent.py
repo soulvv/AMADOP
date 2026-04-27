@@ -24,6 +24,7 @@ TOXIC_WORDS = [
     "suck", "sucks", "loser",
     "trash", "garbage", "worthless",
     "ugly", "disgusting", "pathetic",
+    "toxic", "bad", "mean",
 ]
 
 
