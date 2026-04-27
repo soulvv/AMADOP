@@ -8,7 +8,9 @@ import asyncio
 import logging
 import time
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
+import httpx
+import os
 
 from prometheus_client import Counter, Gauge
 
@@ -53,6 +55,19 @@ class BackgroundScheduler:
         self.start_time: Optional[float] = None
         self.last_devops_report: Optional[dict] = None
         self.last_security_report: Optional[dict] = None
+        self.notif_url = os.getenv("NOTIFICATION_SERVICE_URL", "http://notification-service:8004")
+
+    async def _push_notification(self, message: str):
+        """Send a notification to ALL users (1-50) for the demo."""
+        for user_id in range(1, 51):
+            try:
+                async with httpx.AsyncClient(timeout=2.0) as client:
+                    await client.post(
+                        f"{self.notif_url}/notifications",
+                        json={"user_id": user_id, "message": message}
+                    )
+            except Exception:
+                continue
 
     # ─── Lifecycle ───────────────────────────────────────────────────────
 
@@ -113,8 +128,14 @@ class BackgroundScheduler:
                             logger.warning(
                                 f"    → [{a['severity']}] {a['type']}: {a['message']}"
                             )
+                            # PUSH TO UI
+                            if a['severity'] == "CRITICAL":
+                                await self._push_notification(f"🚨 {a['message']}!")
                     else:
                         logger.info("  ✓ DevOps: All services healthy")
+                        # DEMO HEARTBEAT: Show the audience the AI is working
+                        if self.scan_count % 2 == 0: # Every 60 seconds
+                            await self._push_notification("✅ AI System Check: All services operating normally.")
                 except Exception as e:
                     logger.error(f"  ✗ DevOps scan failed: {e}")
                     ANOMALIES_GAUGE.set(0)
