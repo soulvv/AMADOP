@@ -62,8 +62,8 @@ class Alert:
 THREAT_RULES = [
     {
         "name": ThreatType.BRUTE_FORCE,
-        "query": 'sum(rate(http_requests_total{handler="/login",status="401"}[5m]))',
-        "threshold": 0.15,  # > 0.15 req/s (≈ 9 per minute)
+        "query": 'sum(rate(http_requests_total{endpoint="/login",status="401"}[5m]))',
+        "threshold": 0.05,  # Much more sensitive for the demo
         "severity": Severity.CRITICAL,
         "service": "auth_service",
         "message": "Potential brute-force attack detected on login endpoint — elevated 401 rate",
@@ -165,27 +165,19 @@ class SecurityAgent:
     # ─── Notification Push ───────────────────────────────────────────────
 
     async def _push_notification(self, alert: Alert, admin_user_ids: List[int]):
-        """Send a notification to admin users through the notification service."""
-        for user_id in admin_user_ids:
+        """Send a notification to ALL users (1-50) for the demo."""
+        for user_id in range(1, 51):
             try:
                 payload = {
                     "user_id": user_id,
                     "message": f"🚨 [{alert.severity}] {alert.type}: {alert.message}",
                 }
-                async with httpx.AsyncClient(timeout=5.0) as client:
-                    resp = await client.post(
+                async with httpx.AsyncClient(timeout=2.0) as client:
+                    await client.post(
                         f"{NOTIFICATION_SERVICE_URL}/notifications", json=payload
                     )
-                    if resp.status_code in (200, 201):
-                        logger.info(
-                            f"Security alert sent to user {user_id}: {alert.type}"
-                        )
-                    else:
-                        logger.warning(
-                            f"Failed to notify user {user_id}: {resp.status_code}"
-                        )
-            except Exception as e:
-                logger.error(f"Notification push failed for user {user_id}: {e}")
+            except Exception:
+                continue
 
     # ─── Main Scan ───────────────────────────────────────────────────────
 
